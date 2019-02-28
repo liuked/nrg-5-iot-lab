@@ -1,0 +1,30 @@
+#!/bin/bash
+
+pushd .
+
+if [ $2!="a8" ]; then
+    source /opt/riot.source
+fi
+
+echo -e "\e[34mCompiling the source code... \e[0m"
+cd ~/nrg-5/nrg-5-$1
+echo -e "\e[95m"
+pwd
+echo -e "\e[0m"
+make all
+echo -e "\e[92mOK\e[0m"
+echo -e "\e[34mCopying binaries into A8... \e[0m"
+if [ -f bin/iotlab-a8-m3/nrg-5-$1.elf ]; then
+    cp bin/iotlab-a8-m3/nrg-5-$1.elf ~/A8/
+else
+    if [ -f nrg-5-$1 ]; then
+        cp nrg-5-$1 ~/A8/ 
+    else
+        echo -e "\e[35merror: no binaries found!\e[0m"
+    fi
+fi
+echo -e "\e[92mOK\e[0m"
+popd
+echo -e "\e[95m"
+pwd
+echo -e "\e[0m"

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ssh root@node-a8-$1
