@@ -1,0 +1,40 @@
+#!/bin/bash
+
+RED="\e[91m"
+NC="\e[0m"
+GRN="\e[92m"
+BLU="\e[34m"
+
+pushd .
+
+if [ ! -f ~/nrg-5-$1.elf ]; then
+    echo -e "${RED}erroe: binary nrg-5-$1.elf not found! Aborting... ${NC}"
+    exit 1
+fi
+
+echo -e "${BLU}Flashing nrg-5-$1. elf into M3...${NC}"
+
+touch flash.log
+
+if [[ "$*" == *"-v"* ]]; then
+    flash_a8_m3 nrg-5-$1.elf | tee flash.log
+else 
+    flash_a8_m3 nrg-5-$1.elf > flash.log
+fi
+
+if $(grep "error" flash.log); then
+    echo -e "${RED}error: occurrd in flash. Please check make.log ${NC}"
+    cat flash.log | grep error
+    exit 1
+fi
+
+echo -e "${GRN}OK${NC}"
+
+
+if [[ "$*" == *"-t"* ]]; then
+    echo -e "${BLU}Opening monitor terminal...${NC}"
+    miniterm.py -e /dev/ttyA8_M3 500000
+fi
+
+popd
+
