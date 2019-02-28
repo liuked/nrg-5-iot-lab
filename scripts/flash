@@ -7,7 +7,9 @@ BLU="\e[34m"
 
 pushd .
 
-if [ ! -f ~/nrg-5-$1.elf ]; then
+cd ~/A8/
+
+if [ ! -f nrg-5-$1.elf ]; then
     echo -e "${RED}erroe: binary nrg-5-$1.elf not found! Aborting... ${NC}"
     exit 1
 fi
