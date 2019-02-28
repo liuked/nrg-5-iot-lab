@@ -1,30 +1,61 @@
 #!/bin/bash
 
+RED="\e[91m"
+NC="\e[0m"
+GRN="\e[92m"
+BLU="\e[34m"
+
 pushd .
 
-if [ $2!="a8" ]; then
+#if [ $2!="a8" ]; then
     source /opt/riot.source
+#fi
+
+
+if [ ! -d ~/nrg-5/nrg-5-$1 ]; then
+    echo -e "${RED}erroe: packege nrg-5-$1 not found! Aborting... ${NC}"
+    exit 1
 fi
 
-echo -e "\e[34mCompiling the source code... \e[0m"
 cd ~/nrg-5/nrg-5-$1
-echo -e "\e[95m"
-pwd
-echo -e "\e[0m"
-make all
-echo -e "\e[92mOK\e[0m"
-echo -e "\e[34mCopying binaries into A8... \e[0m"
+echo -e "${BLU}Compiling the source code for nrg-5-$1...${NC}"
+
+# echo -e "\e[95m"
+# pwd
+# echo -e "\e[0m"
+
+touch make.log
+
+if [[ "$*" == *"-v"* ]]; then
+    make all | tee make.log
+else 
+    make all > make.log
+fi
+
+if $(grep "error" make.log); then
+    echo -e "${RED}error: occurrd in make. Please check make.log ${NC}"
+    cat make.log
+    exit 1
+fi
+
+echo -e "${GRN}OK${NC}"
+
+echo -e "${BLU}Copying binaries into A8...${NC}"
+
 if [ -f bin/iotlab-a8-m3/nrg-5-$1.elf ]; then
     cp bin/iotlab-a8-m3/nrg-5-$1.elf ~/A8/
 else
     if [ -f nrg-5-$1 ]; then
         cp nrg-5-$1 ~/A8/ 
     else
-        echo -e "\e[35merror: no binaries found!\e[0m"
+        echo -e "${RED}error: no binaries found!${NC}"
+        exit 1
     fi
 fi
-echo -e "\e[92mOK\e[0m"
+
+echo -e "${GRN}OK${NC}"
 popd
-echo -e "\e[95m"
-pwd
-echo -e "\e[0m"
+
+# echo -e "\e[95m"
+# pwd
+# echo -e "\e[0m"

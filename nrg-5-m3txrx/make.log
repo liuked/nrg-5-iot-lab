@@ -1,0 +1,42 @@
+[1;32mBuilding application "nrg-5-m3txrx" for "iotlab-a8-m3" with MCU "stm32f1".[0m
+
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/boards/iotlab-a8-m3
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/boards/common/iotlab
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/core
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/cpu/stm32f1
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/cpu/cortexm_common
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/cpu/cortexm_common/periph
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/cpu/stm32_common
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/cpu/stm32_common/periph
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/cpu/stm32f1/periph
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/drivers
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/drivers/at86rf2xx
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/drivers/netdev_ieee802154
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/drivers/periph_common
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/auto_init
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/auto_init/netif
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/div
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/fmt
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/isrpipe
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/luid
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/gnrc
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/gnrc/netapi
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/gnrc/netif
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/gnrc/netif/hdr
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/gnrc/netif/ieee802154
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/gnrc/netreg
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/gnrc/pkt
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/gnrc/pktbuf
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/gnrc/pktbuf_static
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/net/link_layer/ieee802154
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/newlib_syscalls_default
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/pm_layered
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/ps
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/random
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/random/tinymt32
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/stdio_uart
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/tsrb
+"make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/xtimer
+   text	   data	    bss	    dec	    hex	filename
+  23868	    144	  11132	  35144	   8948	/senslab/users/luca/nrg-5/nrg-5-m3txrx/bin/iotlab-a8-m3/nrg-5-m3txrx.elf
