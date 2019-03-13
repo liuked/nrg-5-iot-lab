@@ -39,4 +39,4 @@
 "make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/tsrb
 "make" -C /senslab/users/luca/iot-lab/parts/RIOT/sys/xtimer
    text	   data	    bss	    dec	    hex	filename
-  23868	    144	  11132	  35144	   8948	/senslab/users/luca/nrg-5/nrg-5-m3txrx/bin/iotlab-a8-m3/nrg-5-m3txrx.elf
+  24952	    144	  11772	  36868	   9004	/senslab/users/luca/nrg-5/nrg-5-m3txrx/bin/iotlab-a8-m3/nrg-5-m3txrx.elf

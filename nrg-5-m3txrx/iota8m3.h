@@ -38,6 +38,7 @@
 
 #define HDR_LENGTH (9)  // 2 fcf, 1 seq, 2 pan, 2 src, 2 dst
 
+#include "a8m3_cmds.h"
 
 /**
  * @brief   Initialization of the IOTA8M3 thread.
@@ -52,7 +53,15 @@
  */
 
 kernel_pid_t gnrc_iota8m3_init(void);
-void print_bytes_str(uint8_t *addr, size_t addr_len, char *separator);
+void sprint_bytes_str(char* str, const uint8_t *addr, size_t addr_len, const char *separator);
+void print_bytes_str(const uint8_t *addr, size_t addr_len, const char *separator);
 void putbytes(uint8_t *addr, size_t addr_len);
+
+void debug(const char* msg);
+void ack(const char* msg);
+void error(const char* msg);
+
+kernel_pid_t a8m3_rcv_init(void);
+
 
 #endif //NRG_5_M3_RIOT_IOTA8M3_H

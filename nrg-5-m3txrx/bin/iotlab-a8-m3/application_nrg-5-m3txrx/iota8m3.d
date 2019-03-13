@@ -87,6 +87,7 @@
  /senslab/users/luca/iot-lab/parts/RIOT/sys/include/net/gnrc/neterr.h \
  /senslab/users/luca/iot-lab/parts/RIOT/sys/include/utlist.h \
  /senslab/users/luca/iot-lab/parts/RIOT/core/include/assert.h \
+ /senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h \
  /senslab/users/luca/iot-lab/parts/RIOT/core/include/debug.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/stdio.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/lib/gcc/arm-none-eabi/7.3.1/include/stdarg.h \
@@ -266,6 +267,8 @@
 /senslab/users/luca/iot-lab/parts/RIOT/sys/include/utlist.h:
 
 /senslab/users/luca/iot-lab/parts/RIOT/core/include/assert.h:
+
+/senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h:
 
 /senslab/users/luca/iot-lab/parts/RIOT/core/include/debug.h:
 

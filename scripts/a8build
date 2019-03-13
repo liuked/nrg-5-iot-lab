@@ -1,0 +1,49 @@
+#!/bin/bash
+
+RED="\e[91m"
+NC="\e[0m"
+GRN="\e[92m"
+BLU="\e[34m"
+
+LOG_FILE="make.log"
+
+pushd .
+
+
+if [ ! -d ~/A8/a8src/nrg-5-$1 ]; then
+    echo -e "${RED}error: package nrg-5-$1 not found! Aborting... ${NC}"
+    exit 1
+fi
+ 
+cd ~/A8/a8src/nrg-5-$1 
+echo -e "${BLU}Compiling the source code for nrg-5-$1...${NC}"
+
+
+touch ${LOG_FILE}
+
+if [[ "$*" == *"-q"* ]]; then
+    make all &>${LOG_FILE}
+else 
+    make all 2>&1 | tee make.log
+fi
+
+if grep "error" make.log; then
+    echo -e "${RED}error: occurrd in make. Please check make.log ${NC}"
+    cat make.log
+    exit 1
+fi
+
+echo -e "${GRN}OK${NC}"
+
+echo -e "${BLU}Copying binaries into A8...${NC}"
+
+if [ -f nrg-5-$1 ]; then
+    cp nrg-5-$1 ~/A8/ 
+else
+    echo -e "${RED}error: no binaries found!${NC}"
+    exit 1
+fi
+
+echo -e "${GRN}OK${NC}"
+popd
+

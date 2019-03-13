@@ -25,23 +25,57 @@ static void _receive(gnrc_pktsnip_t *pkt);
 /* Main event loop for 6LoWPAN */
 static void *_event_loop(void *args);
 
-#if ENABLE_DEBUG
+//#if ENABLE_DEBUG
+//static char _stack[GNRC_IOTA8M3_STACK_SIZE + THREAD_EXTRA_STACKSIZE_PRINTF];
+//#else
+//static char _stack[GNRC_IOTA8M3_STACK_SIZE];
+//#endif
+
 static char _stack[GNRC_IOTA8M3_STACK_SIZE + THREAD_EXTRA_STACKSIZE_PRINTF];
-#else
-static char _stack[GNRC_IOTA8M3_STACK_SIZE];
-#endif
+
 
 kernel_pid_t gnrc_iota8m3_init(void)
 {
-    if (_pid > KERNEL_PID_UNDEF) {
-        return _pid;
-    }
 
     _pid = thread_create(_stack, sizeof(_stack), GNRC_IOTA8M3_PRIO,
                          THREAD_CREATE_STACKTEST, _event_loop, NULL, "iota8m3");
 
     return _pid;
+
 }
+
+
+static void *_a8m3_recv(void *args)
+{
+    (void)args;
+    char *line;
+    size_t size;
+
+
+    debug("shell receive thread started!");
+
+    while(1) {
+
+        if (__getline(&line, &size, stdin) == -1) {
+        } else {
+            // printf("echo: %s", line);
+        }
+    }
+
+
+    return NULL;
+}
+
+kernel_pid_t a8m3_rcv_init(void)
+{
+
+    _pid = thread_create(_stack, sizeof(_stack), GNRC_IOTA8M3_PRIO,
+                         THREAD_CREATE_STACKTEST, _a8m3_recv, NULL, "a8m3_recv");
+
+    return _pid;
+
+}
+
 
 
 static void _receive(gnrc_pktsnip_t *pkt)
@@ -71,32 +105,7 @@ static void _receive(gnrc_pktsnip_t *pkt)
 //        gnrc_pktbuf_release(pkt);
 //        return;
 //    }
-//
-//    gnrc_pktsnip_t *sixlowpan;
-//    DEBUG("6lo: received uncompressed IPv6 packet\n");
-//    payload = gnrc_pktbuf_start_write(payload);
-//
-//    if (payload == NULL) {
-//        DEBUG("6lo: can not get write access on received packet\n");
-//#if defined(DEVELHELP) && ENABLE_DEBUG
-//        gnrc_pktbuf_stats();
-//#endif
-//        gnrc_pktbuf_release(pkt);
-//        return;
-//    }
-//
-//    /* packet is uncompressed: just mark and remove the dispatch */
-//    sixlowpan = gnrc_pktbuf_mark(payload, sizeof(uint8_t), GNRC_NETTYPE_SIXLOWPAN);
-//
-//    if (sixlowpan == NULL) {
-//        DEBUG("6lo: can not mark 6LoWPAN dispatch\n");
-//        gnrc_pktbuf_release(pkt);
-//        return;
-//    }
-//
-//    pkt = gnrc_pktbuf_remove_snip(pkt, sixlowpan);
-//    payload->type = GNRC_NETTYPE_IPV6;
-//}
+
     hdr = (gnrc_netif_hdr_t *)payload->data;
     // gnrc_netif_hdr_print((gnrc_netif_hdr_t *)payload->data)
     print_bytes_str(gnrc_netif_hdr_get_src_addr(hdr), hdr->src_l2addr_len, ":"); putchar(':');
@@ -117,7 +126,17 @@ static void _receive(gnrc_pktsnip_t *pkt)
     return;
 }
 
-void print_bytes_str(uint8_t *addr, size_t addr_len, char *separator)
+void sprint_bytes_str(char* str, const uint8_t *addr, size_t addr_len, const char *separator)
+{
+    for (size_t i = 0; i < addr_len; i++) {
+        if (i != 0 && separator) {
+            sprintf(str, "%s", separator);
+        }
+        sprintf(str, "%02x", (unsigned)addr[i]);
+    }
+}
+
+void print_bytes_str(const uint8_t *addr, size_t addr_len, const char *separator)
 {
     for (size_t i = 0; i < addr_len; i++) {
         if (i != 0 && separator) {
@@ -179,4 +198,24 @@ static void *_event_loop(void *args)
     }
 
     return NULL;
+}
+
+
+
+void debug(const char* msg){
+    putchar(M3_DEBUG);
+    printf(" debug: %s", msg);
+    putchar('\n');
+}
+
+void ack(const char* msg){
+    putchar(M3_ACK);
+    printf(" ack: %s", msg);
+    putchar('\n');
+}
+
+void error(const char* msg){
+    putchar(M3_ERR);
+    printf("error: %s", msg);
+    putchar('\n');
 }

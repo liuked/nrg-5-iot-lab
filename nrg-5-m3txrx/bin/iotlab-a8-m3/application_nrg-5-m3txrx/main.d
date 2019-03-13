@@ -111,7 +111,8 @@
  /senslab/users/luca/iot-lab/parts/RIOT/sys/include/utlist.h \
  /senslab/users/luca/iot-lab/parts/RIOT/sys/include/random.h \
  /senslab/users/luca/nrg-5/nrg-5-m3txrx/iota8m3.h \
- /senslab/users/luca/iot-lab/parts/RIOT/sys/include/net/gnrc.h
+ /senslab/users/luca/iot-lab/parts/RIOT/sys/include/net/gnrc.h \
+ /senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h
 
 /senslab/users/luca/nrg-5/nrg-5-m3txrx/bin/iotlab-a8-m3/riotbuild/riotbuild.h:
 
@@ -336,3 +337,5 @@
 /senslab/users/luca/nrg-5/nrg-5-m3txrx/iota8m3.h:
 
 /senslab/users/luca/iot-lab/parts/RIOT/sys/include/net/gnrc.h:
+
+/senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h:
