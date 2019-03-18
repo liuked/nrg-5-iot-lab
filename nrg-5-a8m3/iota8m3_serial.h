@@ -12,6 +12,9 @@
 #define PORT "/dev/ttyUSB1"
 #define BAUDRATE 500000
 
+#define DEBUG(...) printf("debug: " __VA_ARGS__); putchar('\n')
+#define INFO(...) printf("info: " __VA_ARGS__); putchar('\n')
+#define RECV(...) putchar(M3_RECV); printf("receive"__VA_ARGS__); putchar('\n')
 
 #define INVALID_FD (-1)
 

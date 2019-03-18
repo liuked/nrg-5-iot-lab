@@ -6,6 +6,7 @@
 #define NRG_5_M3_RIOT_IOTA8M3_H
 
 #include <stdbool.h>
+#include "a8m3_cmds.h"
 
 #include "kernel_types.h"
 #include "net/gnrc.h"
@@ -13,6 +14,11 @@
 
 
 #define START_SEQ_LEN (5)
+
+#define DEBUG(...) putchar(M3_DEBUG); printf("debug: " __VA_ARGS__)
+#define INFO(...) putchar(M3_INFO); printf("info: " __VA_ARGS__)
+#define ERROR(...) putchar(M3_ERROR); printf("error: " __VA_ARGS__)
+#define RECV(...) putchar(M3_RECV); printf("receive"__VA_ARGS__)
 
 
 /**

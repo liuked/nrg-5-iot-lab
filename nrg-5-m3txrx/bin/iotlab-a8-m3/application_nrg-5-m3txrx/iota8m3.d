@@ -3,6 +3,7 @@
  /senslab/users/luca/nrg-5/nrg-5-m3txrx/bin/iotlab-a8-m3/riotbuild/riotbuild.h \
  /senslab/users/luca/nrg-5/nrg-5-m3txrx/iota8m3.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
+ /senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h \
  /senslab/users/luca/iot-lab/parts/RIOT/core/include/kernel_types.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/lib/gcc/arm-none-eabi/7.3.1/include/stdint.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/stdint.h \
@@ -87,18 +88,17 @@
  /senslab/users/luca/iot-lab/parts/RIOT/sys/include/net/gnrc/neterr.h \
  /senslab/users/luca/iot-lab/parts/RIOT/sys/include/utlist.h \
  /senslab/users/luca/iot-lab/parts/RIOT/core/include/assert.h \
- /senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h \
- /senslab/users/luca/iot-lab/parts/RIOT/core/include/debug.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/stdio.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/lib/gcc/arm-none-eabi/7.3.1/include/stdarg.h \
- /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/sys/stdio.h \
- /senslab/users/luca/iot-lab/parts/RIOT/core/include/thread.h
+ /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/sys/stdio.h
 
 /senslab/users/luca/nrg-5/nrg-5-m3txrx/bin/iotlab-a8-m3/riotbuild/riotbuild.h:
 
 /senslab/users/luca/nrg-5/nrg-5-m3txrx/iota8m3.h:
 
 /opt/gcc-arm-none-eabi-7-2018-q2-update/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h:
+
+/senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h:
 
 /senslab/users/luca/iot-lab/parts/RIOT/core/include/kernel_types.h:
 
@@ -268,14 +268,8 @@
 
 /senslab/users/luca/iot-lab/parts/RIOT/core/include/assert.h:
 
-/senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h:
-
-/senslab/users/luca/iot-lab/parts/RIOT/core/include/debug.h:
-
 /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/stdio.h:
 
 /opt/gcc-arm-none-eabi-7-2018-q2-update/lib/gcc/arm-none-eabi/7.3.1/include/stdarg.h:
 
 /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/sys/stdio.h:
-
-/senslab/users/luca/iot-lab/parts/RIOT/core/include/thread.h:

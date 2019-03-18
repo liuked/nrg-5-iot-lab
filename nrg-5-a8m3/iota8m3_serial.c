@@ -105,7 +105,7 @@ void print_bytes_str(const uint8_t *addr, size_t addr_len, const char *separator
         if (i != 0 && separator) {
             printf("%s", separator);
         }
-        printf("%02x", (unsigned)addr[i]);
+        printf("%02X", (unsigned)addr[i]);
     }
 }
 

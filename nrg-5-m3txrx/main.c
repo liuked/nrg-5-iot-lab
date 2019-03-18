@@ -49,7 +49,7 @@ int main(void)
 //    uint8_t datalen;
 
 
-    // xtimer_sleep(5);
+    //
 
     //debug("starting recv_thread");
     //a8m3_rcv_init();
@@ -60,7 +60,9 @@ int main(void)
 //    }
 
 
-    debug("M3 is started!");
+    xtimer_sleep(3);
+
+    debug("I'm alive!");
 
 
     while (1) {
@@ -71,7 +73,7 @@ int main(void)
             if (getchar() == start_seq[i]) i++; else i=0;
         }
 
-        debug("Start sequence received!");
+        debug("recognized message!");
 
         // receice 1byte for cmd (INIT, SEND, STOP, RECEIVED)
         cmd = (uint8_t)getchar();
@@ -79,6 +81,7 @@ int main(void)
         // switch handler
         switch (cmd){
             case M3_INIT:
+                debug("received M3_INIT");
                 // expect 2 Bytes of data for this command (HW_ADDR)
                 for (i=0; i<IEEE802154_SHORT_ADDRESS_LEN; i++){
                     hw_addr[i] = (uint8_t)getchar();
@@ -86,12 +89,13 @@ int main(void)
                 _m3_init(hw_addr);
                 break;
             case M3_SEND:
+                debug("received M3_SEND");
                 sprintf(addrstr, "%02X:%02X", hw_addr[0], hw_addr[1]);
                 _send_on_802154("bcast", &i, sizeof(i));
                 break;
             default:
-                error("error: unrecognized command");
-                return -1;
+                error("unrecognized command");
+                continue;
         }
     }
 
@@ -106,7 +110,9 @@ int _send_on_802154(const char *addrstr, const void *data, size_t size)
     /* start sending data */
     (void) data;
     (void) size;
-    debug("starting data generator\n");
+    if (!pid_is_valid(iface)) error("radio interface not found or not initialized");
+
+    debug("starting data generator");
     uint16_t d = 0;
     ack("Send operation ongoing");
     while (1) {
@@ -133,8 +139,6 @@ int _m3_init(const uint8_t* hw_addr)
         error("failed loading interface");
         return -1;
     }
-
-
 
     /* init receiver */
     debug("starting receiver...");
