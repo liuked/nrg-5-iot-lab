@@ -22,7 +22,7 @@ serial_t serial_connect(void) {
     struct termios newtio;
     struct serial_struct ser_info;
 
-    debug("serial_connect: opening serial port...\n");
+    DEBUG("serial_connect: opening serial port...\n");
 
     serial_t serial;
     serial = open(PORT, O_RDWR );               /* Try user input depending on port */
@@ -83,20 +83,29 @@ serial_t serial_connect(void) {
 }
 
 
-int reads(int fd, char* data, unsigned int size)
+int __m3_reads(int fd, char *data, unsigned int size)
 {
     int n=0;
     int i=0;
+    int end_c=0;
+    char stop_seq[STOP_SEQ_LEN];
+    strcpy(stop_seq, STOP_SEQ);
 
     memset(data, 0, size);
 
     do {
         n = read (fd, data+i, 1);
-        if (!n) return i;
+        if (!n) {
+            return i;
+        }
+        if (data[i]==stop_seq[end_c]) end_c++; else end_c=0;
+        i++;
     }
-    while (data[i++]!='\n' && i<size);
+    while (end_c<STOP_SEQ_LEN && i<size);
+    //remove end caracters from string
+    memset(data+i-STOP_SEQ_LEN, 0, STOP_SEQ_LEN);
 
-        return i;
+    return i-STOP_SEQ_LEN;
 }
 
 void print_bytes_str(const uint8_t *addr, size_t addr_len, const char *separator)
@@ -109,19 +118,92 @@ void print_bytes_str(const uint8_t *addr, size_t addr_len, const char *separator
     }
 }
 
-
-
-void debug(const char* msg){
-    printf("debug: %s", msg);
-    putchar('\n');
+void sprint_bytes_str(char* str, const uint8_t *addr, size_t addr_len, const char *separator)
+{
+    char *p;
+    p=str;
+    for (size_t i = 0; i < addr_len; i++) {
+        if (i != 0 && separator) {
+            sprintf(p, "%s", separator);
+            p+=(strlen(separator));
+        }
+        sprintf(p, "%02X", (unsigned)addr[i]);
+        p+=2;
+    }
 }
 
-void info(const char* msg){
-    printf("info: %s", msg);
-    putchar('\n');
+
+size_t serial_recv(serial_t sfd, serial_buf_t buf, size_t buflen, msg_type_t *rcv_msg_type)
+{
+    size_t n;
+    n = (size_t)__m3_reads(sfd, buf, (buflen < MAX_SER_MSG_LEN) ? buflen : MAX_SER_MSG_LEN);
+    if (!n) {
+        DEBUG("serial_recv: serial timeout");
+        return 0;
+    }
+    *rcv_msg_type = buf[0];
+    switch (*rcv_msg_type) {
+        case M3_ACK:
+            INFO("---> [M3 ACK] [%d]: %s", n, buf);
+            break;
+        case M3_ERR:
+            INFO("---> [M3 ERR][%d]: %s", n, buf);
+            break;
+        case M3_RECV:
+            INFO("---> [M3 RECV][%d]: %s", n, buf);
+            break;
+        default:
+        INFO("---> [M3 DEBUG][%d]: %s", n, buf);
+            break;
+    }
+
+    return n;
+
 }
 
-void error(const char* msg){
-    printf("error: %s", msg);
-    putchar('\n');
+
+
+int serial_send(serial_t sfd, serial_buf_t buf, size_t buflen, msg_type_t msg_type, const uint8_t *data, const size_t len)
+{
+    msg_type_t rcv_msg_type = M3_NULL;
+    uint8_t msg[MAX_DATA_LEN + START_SEQ_LEN];
+    char dummy[MAX_DATA_LEN];
+    size_t n = 0;
+    int attempts = 0;
+    uint8_t skip;
+    int i;
+    int timeouts;
+
+    // build init msg
+    sprintf(msg, "%s%c", START_SEQ, msg_type);
+    for (i=0; i<len; i++) {
+        sprintf(msg+START_SEQ_LEN+1+i, "%c", data[i]);
+    }
+
+    while (rcv_msg_type != M3_ACK && attempts++ < MAX_ATTEMPTS) {
+
+        buf[0] = M3_NULL;
+        // SEND COMMAND
+        if (write(sfd, msg, (START_SEQ_LEN + sizeof(msg_type_t) + len)) < 0) {     // send 5 character greetings + init command + HW addr
+            DEBUG("serial_send: serial send error");
+            continue;
+        }
+        // print screen info
+        sprint_bytes_str(dummy, msg, START_SEQ_LEN + sizeof(msg_type_t) + len, " ");
+        INFO("<--- A8: %s (%s)", msg, dummy);
+
+        skip = 1; n = 1; timeouts=0;
+        // DON'T CONSIDER DEBUG MSG
+        while (skip) {
+            if (!serial_recv(sfd, buf, buflen, &rcv_msg_type)) timeouts++;
+            if (timeouts>=MAX_TIMEOUTS) break;
+            if (rcv_msg_type==M3_ACK||rcv_msg_type==M3_ERR||rcv_msg_type==M3_RECV) skip=0;
+        }
+
+        // sleep(3);
+    }
+
+
+    return (attempts>MAX_ATTEMPTS) ? -1 : 0;
+
 }

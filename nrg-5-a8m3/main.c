@@ -4,16 +4,15 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "iota8m3_serial.h"
+//#include "iotm3_ops.h"
 
-#define START_SEQ_LEN (5)
-#define MAX_LINE 100
-#define HOSTNAME_FILE "/etc/hostname"
-#define MAX_ATTEMPTS 10
+
+#define IEEE802154_SHORT_ADDRESS_LEN 2
 
 int c;
 uint8_t msg[128];
 uint8_t hw_addr[2];
-char buf [MAX_LINE];
+char buf [MAX_SER_MSG_LEN];
 
 char *fileline;
 size_t linelen;
@@ -23,28 +22,29 @@ uint8_t skip;
 
 int main(int argc, char *argv[]) {
 
-    serial_t serial;
-    debug("main: connecting serial...");
-    serial = serial_connect();
-    if (serial < 0) {
-        error("main: cannot open port");
+    serial_t sfd;
+    DEBUG("main: connecting sfd...");
+    sfd = serial_connect();
+    if (sfd < 0) {
+        ERROR("main: cannot open port");
         return -1;
     }
-    info("main: serial connected with 5 sec timeout non-blocking");
+
+    INFO("main: serial connected with 5 sec timeout non-blocking");
 
 
     int n = 0;
-    uint8_t msg_typ = 0;
+    msg_type_t msg_typ;
 
 //    printf("main: waiting for m3\n");
 
 //    while(!n) {   // TODO: change to !n
-//        n = read(serial, buf, sizeof buf);  // read up to 100 characters if ready to read
+//        n = read(sfd, buf, sizeof buf);  // read up to 100 characters if ready to read
 //        if (n>0) {
 //
 //            printf("m3: %s", buf);
 //        } else {
-//            debug("main: serial timeout\n");
+//            debug("main: sfd timeout\n");
 //        }
 //    }
 //    info("m3 detected!\n");
@@ -59,23 +59,18 @@ int main(int argc, char *argv[]) {
 
 
     FILE *fi;
-
     fi = fopen(HOSTNAME_FILE, "r");
-
     getline(&fileline, &linelen, fi);
     //printf("%s", fileline);
 
     char *tok;
     if (linelen) tok = strtok(fileline, "-");
-
     while (tok) {
         //printf("%s", tok);
         nodeidstr = tok;
         tok = strtok(NULL, "-");
     }
-
-    printf("id: %s\n", nodeidstr);
-
+    INFO("detected node id: %s", nodeidstr);
     if (nodeidstr) {
         hw_addr[0] = (uint8_t) atoi(nodeidstr) % 255;
         hw_addr[1] = (uint8_t) atoi(nodeidstr) / 255;
@@ -86,155 +81,147 @@ int main(int argc, char *argv[]) {
 
 
 
-    DEBUG("hw_addr: %d %d", hw_addr[0], hw_addr[1]);
+//    // build init msg
+//    sprintf(msg, "messg%c%c%c", M3_INIT, hw_addr[1], hw_addr[0]);
+//
+//    while (msg_typ != M3_ACK && attempts++ < MAX_ATTEMPTS) {
+//        memset(buf, 0, 100);
+//
+//        // SEND INIT COMMAND
+//        if (write(sfd, msg, 8) < 0) {     // send 5 character greetings + init command + HW addr
+//            error("main: sfd send error");
+//            continue;
+//        }
+//        printf("---> A8: (1) %s\n", msg);
+//        printf("  (");
+//        print_bytes_str(msg, 8, " ");
+//        printf(")\n");
+//
+//        n = __m3_reads(sfd, buf, MAX_LINE);
+//        skip = 1;
+//        // SKIP DEBUG COMMENTS
+//        while (skip){
+//
+//            n = __m3_reads(sfd, buf, MAX_LINE);
+//            if (!n) {
+//                debug("sfd timeout");
+//                continue;
+//            }
+//
+//            msg_typ = buf[0];
+//
+//            switch (msg_typ) {
+//                case M3_ACK:
+//                    skip = 0;
+//                    info("[M3 ACK]");
+//                    break;
+//                case M3_ERR:
+//                    skip = 0;
+//                    info("[M3 ERR]");
+//                    break;
+//                case M3_RECV:
+//                    skip = 0;
+//                    info("[M3 RECV]");
+//                    break;
+//                default:
+//                    info("[M3 DEBUG]");
+//                    break;
+//            }
+//            printf("<--- M3[%d]: %s", n, buf);
+//#ifdef VERBOSE
+//            printf("  (");
+//            print_bytes_str(buf,n," ");
+//            printf(")\n");
+//#endif
+//        }
+//
+//
+//
+//        sleep(3);
+//    }
+//
+//
+//    if (attempts>MAX_ATTEMPTS) exit(-1);
 
-    // build init msg
-    sprintf(msg, "messg%c%c%c", M3_INIT, hw_addr[1], hw_addr[0]);
+//
+//
+//    // build send command
+//    sprintf(msg, "messg%c", M3_SEND);
+//
+//    while (msg_typ!=M3_ACK && attempts++<MAX_ATTEMPTS) {
+//        memset(buf, 0, 100);
+//
+//        // SEND SEND COMMAND
+//        if (write(sfd, msg, 6) < 0) {     // send 5 character greetings + init command + HW addr
+//            error("main: sfd send error");
+//        }
+//        printf("---> A8: (1) %s\n", msg);
+//        printf("  (");
+//        print_bytes_str(msg, 8, " ");
+//        printf(")\n");
+//
+//        n = __m3_reads(sfd, buf, MAX_LINE);
+//        skip = 1;
+//        // SKIP DEBUG COMMENTS
+//        while (skip){
+//
+//            n = __m3_reads(sfd, buf, MAX_LINE);
+//            if (!n) {
+//                debug("sfd timeout");
+//                continue;
+//            }
+//
+//            msg_typ = buf[0];
+//
+//            switch (msg_typ) {
+//                case M3_ACK:
+//                    skip = 0;
+//                    info("[M3 ACK]");
+//                    break;
+//                case M3_ERR:
+//                    skip = 0;
+//                    info("[M3 ERR]");
+//                    break;
+//                case M3_RECV:
+//                    skip = 0;
+//                    info("[M3 RECV]");
+//                    break;
+//                default:
+//                    info("[M3 DEBUG]");
+//                    break;
+//            }
+//            printf("<--- M3[%d]: %s", n, buf);
+//#ifdef VERBOSE
+//            printf("  (");
+//            print_bytes_str(buf,n," ");
+//            printf(")\n");
+//#endif
+//        }
+//
+//        sleep(3);
+//
+//    }
 
-    while (msg_typ != M3_ACK && attempts++ < MAX_ATTEMPTS) {
-        memset(buf, 0, 100);
 
-        // SEND INIT COMMAND
-        if (write(serial, msg, 8) < 0) {     // send 5 character greetings + init command + HW addr
-            error("main: serial send error");
-            continue;
-        }
-        printf("---> A8: (1) %s\n", msg);
-        printf("  (");
-        print_bytes_str(msg, 8, " ");
-        printf(")\n");
-
-        n = reads(serial, buf, MAX_LINE);
-        skip = 1;
-        // SKIP DEBUG COMMENTS
-        while (skip){
-
-            n = reads(serial, buf, MAX_LINE);
-            if (!n) {
-                debug("serial timeout");
-                continue;
-            }
-
-            msg_typ = buf[0];
-
-            switch (msg_typ) {
-                case M3_ACK:
-                    skip = 0;
-                    info("[M3 ACK]");
-                    break;
-                case M3_ERR:
-                    skip = 0;
-                    info("[M3 ERR]");
-                    break;
-                case M3_RECV:
-                    skip = 0;
-                    info("[M3 RECV]");
-                    break;
-                default:
-                    info("[M3 DEBUG]");
-                    break;
-            }
-            printf("<--- M3[%d]: %s", n, buf);
-#ifdef VERBOSE
-            printf("  (");
-            print_bytes_str(buf,n," ");
-            printf(")\n");
-#endif
-        }
-
-
-
-        sleep(3);
+    INFO("main: STARTING M3 RADIO with hw_addr: %d %d", hw_addr[0], hw_addr[1]);
+    if (serial_send(sfd, buf, MAX_SER_MSG_LEN, M3_INIT, hw_addr, IEEE802154_SHORT_ADDRESS_LEN) < 0) {
+        ERROR("main: cannot send M3_INIT");
+        exit(-1);
     }
 
 
-    if (attempts>MAX_ATTEMPTS) exit(-1);
-
-    attempts=0; msg_typ=0;
-    printf("STARTING SENDER...");
-
-    // build send command
-    sprintf(msg, "messg%c", M3_SEND);
-
-    while (msg_typ!=M3_ACK && attempts++<MAX_ATTEMPTS) {
-        memset(buf, 0, 100);
-
-        // SEND SEND COMMAND
-        if (write(serial, msg, 6) < 0) {     // send 5 character greetings + init command + HW addr
-            error("main: serial send error");
-        }
-        printf("---> A8: (1) %s\n", msg);
-        printf("  (");
-        print_bytes_str(msg, 8, " ");
-        printf(")\n");
-
-        n = reads(serial, buf, MAX_LINE);
-        skip = 1;
-        // SKIP DEBUG COMMENTS
-        while (skip){
-
-            n = reads(serial, buf, MAX_LINE);
-            if (!n) {
-                debug("serial timeout");
-                continue;
-            }
-
-            msg_typ = buf[0];
-
-            switch (msg_typ) {
-                case M3_ACK:
-                    skip = 0;
-                    info("[M3 ACK]");
-                    break;
-                case M3_ERR:
-                    skip = 0;
-                    info("[M3 ERR]");
-                    break;
-                case M3_RECV:
-                    skip = 0;
-                    info("[M3 RECV]");
-                    break;
-                default:
-                    info("[M3 DEBUG]");
-                    break;
-            }
-            printf("<--- M3[%d]: %s", n, buf);
-#ifdef VERBOSE
-            printf("  (");
-            print_bytes_str(buf,n," ");
-            printf(")\n");
-#endif
-        }
-
-        sleep(3);
-
+    INFO("main: STARTING SENDER...");
+    sprintf(msg, "");
+    if (serial_send(sfd, buf, MAX_SER_MSG_LEN, M3_SEND, NULL, 0) < 0) {
+        ERROR("main: cannot send M3_SEND");
+        exit(-1);
     }
 
+
+    INFO("main: LISTENING...");
     while (1) {
         // LISTENING
-        n = reads(serial, buf, MAX_LINE);
-        if (!n) {
-            debug("serial timeout");
-            continue;
-        }
-
-        msg_typ = buf[0];
-
-        switch (msg_typ) {
-            case M3_ACK:
-                info("[M3 ACK]");
-                break;
-            case M3_ERR:
-                info("[M3 ERR]");
-                break;
-            case M3_RECV:
-                info("[M3 RECV]");
-                break;
-            default:
-                info("[M3 DEBUG]");
-                break;
-        }
-        printf("<--- M3[%d]: %s", n, buf);
+        n = serial_recv(sfd, buf, MAX_SER_MSG_LEN, &msg_typ);
     }
 
 

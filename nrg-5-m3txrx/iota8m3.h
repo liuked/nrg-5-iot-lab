@@ -12,13 +12,10 @@
 #include "net/gnrc.h"
 #include "thread.h"
 
-
-#define START_SEQ_LEN (5)
-
-#define DEBUG(...) putchar(M3_DEBUG); printf("debug: " __VA_ARGS__)
-#define INFO(...) putchar(M3_INFO); printf("info: " __VA_ARGS__)
-#define ERROR(...) putchar(M3_ERROR); printf("error: " __VA_ARGS__)
-#define RECV(...) putchar(M3_RECV); printf("receive"__VA_ARGS__)
+#define DEBUG(...) putchar(M3_DEBUG); printf("debug: " __VA_ARGS__); printf(STOP_SEQ)
+#define ACK(...) putchar(M3_ACK); printf("ack: " __VA_ARGS__); printf(STOP_SEQ)
+#define ERROR(...) putchar(M3_ERR); printf("error: " __VA_ARGS__); printf(STOP_SEQ)
+#define RECV(...) putchar(M3_RECV); printf("receive"__VA_ARGS__); printf(STOP_SEQ)
 
 
 /**
@@ -62,10 +59,6 @@ kernel_pid_t gnrc_iota8m3_init(void);
 void sprint_bytes_str(char* str, const uint8_t *addr, size_t addr_len, const char *separator);
 void print_bytes_str(const uint8_t *addr, size_t addr_len, const char *separator);
 void putbytes(uint8_t *addr, size_t addr_len);
-
-void debug(const char* msg);
-void ack(const char* msg);
-void error(const char* msg);
 
 kernel_pid_t a8m3_rcv_init(void);
 

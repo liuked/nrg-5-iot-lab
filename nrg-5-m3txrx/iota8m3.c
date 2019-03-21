@@ -42,7 +42,7 @@ kernel_pid_t gnrc_iota8m3_init(void)
 //    size_t size;
 //
 //
-//    debug("shell receive thread started!");
+//    DEBUG("shell receive thread started!");
 //
 //    while(1) {
 //
@@ -81,7 +81,7 @@ static void _receive(gnrc_pktsnip_t *pkt)
                                              * might get replaced */
 
     if (payload == NULL) {
-        debug("iota8m3: can not get write access on received packet\n");
+        DEBUG("iota8m3: can not get write access on received packet\n");
 
         gnrc_pktbuf_release(pkt);
         return;
@@ -165,52 +165,32 @@ static void *_event_loop(void *args)
 
     /* start event loop */
     while (1) {
-        debug("iota8m3: waiting for incoming message.");
+        DEBUG("iota8m3: waiting for incoming message.");
         msg_receive(&msg);
 
         switch (msg.type) {
             case GNRC_NETAPI_MSG_TYPE_RCV:
-                debug("iota8m3: GNRC_NETDEV_MSG_TYPE_RCV received");
+                DEBUG("iota8m3: GNRC_NETDEV_MSG_TYPE_RCV received");
                 _receive(msg.content.ptr);
                 break;
 
             case GNRC_NETAPI_MSG_TYPE_SND:
-                debug("iota8m3: GNRC_NETDEV_MSG_TYPE_SND received");
+                DEBUG("iota8m3: GNRC_NETDEV_MSG_TYPE_SND received");
                 // _send(msg.content.ptr);
                 break;
 
             case GNRC_NETAPI_MSG_TYPE_GET:
             case GNRC_NETAPI_MSG_TYPE_SET:
-                debug("iota8m3: reply to unsupported get/set");
+                DEBUG("iota8m3: reply to unsupported get/set");
                 reply.content.value = -ENOTSUP;
                 msg_reply(&msg, &reply);
                 break;
 
             default:
-                debug("iota8m3: operation not supported");
+                DEBUG("iota8m3: operation not supported");
                 break;
         }
     }
 
     return NULL;
-}
-
-
-
-void debug(const char* msg){
-    putchar(M3_DEBUG);
-    printf(" debug: %s", msg);
-    putchar('\n');
-}
-
-void ack(const char* msg){
-    putchar(M3_ACK);
-    printf(" ack: %s", msg);
-    putchar('\n');
-}
-
-void error(const char* msg){
-    putchar(M3_ERR);
-    printf("error: %s", msg);
-    putchar('\n');
 }

@@ -1,3 +1,5 @@
 #!/bin/bash
 
-ssh root@node-a8-$1
+NRG5_RT=~/nrg-5
+
+ssh -t root@node-a8-$1 'cd ~/A8 && ./flash m3txrx; bash -l' 

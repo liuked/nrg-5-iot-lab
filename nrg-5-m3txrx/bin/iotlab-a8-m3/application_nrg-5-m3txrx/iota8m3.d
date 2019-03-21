@@ -4,7 +4,6 @@
  /senslab/users/luca/nrg-5/nrg-5-m3txrx/iota8m3.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
  /senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h \
- /senslab/users/luca/iot-lab/parts/RIOT/core/include/kernel_types.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/lib/gcc/arm-none-eabi/7.3.1/include/stdint.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/stdint.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/machine/_default_types.h \
@@ -12,6 +11,7 @@
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/_newlib_version.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/sys/_intsup.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/sys/_stdint.h \
+ /senslab/users/luca/iot-lab/parts/RIOT/core/include/kernel_types.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/inttypes.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/newlib-nano/newlib.h \
  /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/sys/config.h \
@@ -100,8 +100,6 @@
 
 /senslab/users/luca/nrg-5/nrg-5-m3txrx/a8m3_cmds.h:
 
-/senslab/users/luca/iot-lab/parts/RIOT/core/include/kernel_types.h:
-
 /opt/gcc-arm-none-eabi-7-2018-q2-update/lib/gcc/arm-none-eabi/7.3.1/include/stdint.h:
 
 /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/stdint.h:
@@ -115,6 +113,8 @@
 /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/sys/_intsup.h:
 
 /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/sys/_stdint.h:
+
+/senslab/users/luca/iot-lab/parts/RIOT/core/include/kernel_types.h:
 
 /opt/gcc-arm-none-eabi-7-2018-q2-update/arm-none-eabi/include/inttypes.h:
 
