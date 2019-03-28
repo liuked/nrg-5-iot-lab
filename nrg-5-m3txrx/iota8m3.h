@@ -55,12 +55,26 @@
  * @return  -EOVERFLOW, if there are too many threads running already in general
  */
 
-kernel_pid_t gnrc_iota8m3_init(void);
-void sprint_bytes_str(char* str, const uint8_t *addr, size_t addr_len, const char *separator);
-void print_bytes_str(const uint8_t *addr, size_t addr_len, const char *separator);
+
 void putbytes(uint8_t *addr, size_t addr_len);
 
+
+/* utility functions */
 kernel_pid_t a8m3_rcv_init(void);
+int send_over_air(const char *addrstr, const void *data, size_t size);
+int load_iface(const uint8_t *new_addr, uint8_t addr_len);
+int m3_init(const uint8_t *hw_addr);
+
+void sprint_bytes_str(char* str, const uint8_t *addr, size_t addr_len, const char *separator);
+void print_bytes_str(const uint8_t *addr, size_t addr_len, const char *separator);
+
+/** private operations fuonctions**/
+bool _is_iface(kernel_pid_t iface);
+int _send_on_802154(kernel_pid_t iface, const char *addrstr, const uint8_t *data, uint8_t len);
+
+extern kernel_pid_t _gnrc_iota8m3_init(void);
+extern gnrc_netif_t *netif;
+extern kernel_pid_t iface;
 
 
 #endif //NRG_5_M3_RIOT_IOTA8M3_H

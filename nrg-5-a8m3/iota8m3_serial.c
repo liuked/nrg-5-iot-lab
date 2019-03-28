@@ -22,7 +22,7 @@ serial_t serial_connect(void) {
     struct termios newtio;
     struct serial_struct ser_info;
 
-    DEBUG("serial_connect: opening serial port...\n");
+    LOG_DEBUG("serial_connect: opening serial port...\n");
 
     serial_t serial;
     serial = open(PORT, O_RDWR );               /* Try user input depending on port */
@@ -82,6 +82,19 @@ serial_t serial_connect(void) {
 
 }
 
+int serial_close(serial_t sfd)
+{
+    if (sfd) {
+        if (close(sfd)) {
+            LOG_ERROR("error closing serial %d", sfd);
+            return -1;
+        }
+        return 0;
+    }
+    LOG_DEBUG("null pointer");
+    return -1;
+}
+
 
 int __m3_reads(int fd, char *data, unsigned int size)
 {
@@ -138,22 +151,22 @@ size_t serial_recv(serial_t sfd, serial_buf_t buf, size_t buflen, msg_type_t *rc
     size_t n;
     n = (size_t)__m3_reads(sfd, buf, (buflen < MAX_SER_MSG_LEN) ? buflen : MAX_SER_MSG_LEN);
     if (!n) {
-        DEBUG("serial_recv: serial timeout");
+        LOG_DEBUG("serial_recv: serial timeout\n");
         return 0;
     }
     *rcv_msg_type = buf[0];
     switch (*rcv_msg_type) {
         case M3_ACK:
-            INFO("---> [M3 ACK] [%d]: %s", n, buf);
+            LOG_INFO("---> [M3 ACK] [%d]: %s\n", n, buf);
             break;
         case M3_ERR:
-            INFO("---> [M3 ERR][%d]: %s", n, buf);
+            LOG_INFO("---> [M3 ERR][%d]: %s\n", n, buf);
             break;
         case M3_RECV:
-            INFO("---> [M3 RECV][%d]: %s", n, buf);
+            LOG_INFO("---> [M3 RECV][%d]: %s\n", n, buf);
             break;
         default:
-        INFO("---> [M3 DEBUG][%d]: %s", n, buf);
+        LOG_INFO("---> [M3 DEBUG][%d]: %s\n", n, buf);
             break;
     }
 
@@ -168,7 +181,6 @@ int serial_send(serial_t sfd, serial_buf_t buf, size_t buflen, msg_type_t msg_ty
     msg_type_t rcv_msg_type = M3_NULL;
     uint8_t msg[MAX_DATA_LEN + START_SEQ_LEN];
     char dummy[MAX_DATA_LEN];
-    size_t n = 0;
     int attempts = 0;
     uint8_t skip;
     int i;
@@ -181,29 +193,32 @@ int serial_send(serial_t sfd, serial_buf_t buf, size_t buflen, msg_type_t msg_ty
     }
 
     while (rcv_msg_type != M3_ACK && attempts++ < MAX_ATTEMPTS) {
-
+        LOG_DEBUG("sending attempt n.%d\n", attempts);
         buf[0] = M3_NULL;
         // SEND COMMAND
         if (write(sfd, msg, (START_SEQ_LEN + sizeof(msg_type_t) + len)) < 0) {     // send 5 character greetings + init command + HW addr
-            DEBUG("serial_send: serial send error");
+            LOG_DEBUG("serial_send: serial send error\n");
             continue;
         }
         // print screen info
         sprint_bytes_str(dummy, msg, START_SEQ_LEN + sizeof(msg_type_t) + len, " ");
-        INFO("<--- A8: %s (%s)", msg, dummy);
+        LOG_INFO("<--- A8: %s (%s)\n", msg, dummy);
 
-        skip = 1; n = 1; timeouts=0;
+        skip = 1; timeouts=0;
         // DON'T CONSIDER DEBUG MSG
         while (skip) {
             if (!serial_recv(sfd, buf, buflen, &rcv_msg_type)) timeouts++;
             if (timeouts>=MAX_TIMEOUTS) break;
-            if (rcv_msg_type==M3_ACK||rcv_msg_type==M3_ERR||rcv_msg_type==M3_RECV) skip=0;
+            if (rcv_msg_type==M3_ACK||rcv_msg_type==M3_ERR||rcv_msg_type==M3_RECV) {
+                skip=0;
+            }
         }
-
-        // sleep(3);
     }
 
-
-    return (attempts>MAX_ATTEMPTS) ? -1 : 0;
+    if (attempts>MAX_ATTEMPTS) {
+        LOG_ERROR("cannot send (reached max attempts)\n");
+        return -1;
+    }
+    return 0;
 
 }
