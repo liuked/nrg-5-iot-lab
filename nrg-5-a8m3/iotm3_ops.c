@@ -20,7 +20,7 @@ int iotm3_open(char *name, nic_handle_t **ret_handle)
     handler->sfd = serial_connect();
     if (handler->sfd < 0) {
         LOG_ERROR("cannot open serial\n");
-        return -1;
+        goto err_ret_noclose;
     }
     LOG_DEBUG("serial connected with 5 sec timeout non-blocking\n");
     
@@ -34,7 +34,7 @@ int iotm3_open(char *name, nic_handle_t **ret_handle)
     fi = fopen(HOSTNAME_FILE, "r");
     if (fi==NULL) {
         LOG_ERROR("unable to open file "HOSTNAME_FILE);
-        return -1;
+        goto err_ret;
     }
 
     fileline = malloc(MAX_LINE*sizeof(char));
@@ -46,7 +46,7 @@ int iotm3_open(char *name, nic_handle_t **ret_handle)
         tok = strtok(fileline, "-");
     } else {
         LOG_ERROR("cannot read node id");
-        return -1;
+        goto err_ret;
     }
     while (tok) {
 //        LOG_DEBUG("tok: %s\n", tok);
@@ -68,7 +68,7 @@ int iotm3_open(char *name, nic_handle_t **ret_handle)
     LOG_INFO("starting M3 radio with hw_addr: %d %d\n", handler->if_mac[0], handler->if_mac[1]);
     if (serial_send(handler->sfd, handler->buf, MAX_SER_MSG_LEN, M3_INIT, (uint8_t*)handler->if_mac, IEEE802154_SHORT_ADDRESS_LEN) < 0) {
         LOG_ERROR("cannot send M3_INIT\n");
-        return -1;
+        goto err_ret;
     }
     LOG_DEBUG("getting mtu\n");
     //get mtu
@@ -95,6 +95,7 @@ int iotm3_close(nic_handle_t *handle) {
 }
 
 int iotm3_send(nic_handle_t *handle, packet_t *pkt, l2addr_t *dst) {
+    char dummy[MAX_SER_MSG_LEN];
     iotm3_handle_t *iotm3_hdl = (iotm3_handle_t *)handle;
     // prepare addr and datalen for sending
     uint8_t prepdata[IEEE802154_SHORT_ADDRESS_LEN+1];  // 2B for addr, 1B for datalen
@@ -102,9 +103,13 @@ int iotm3_send(nic_handle_t *handle, packet_t *pkt, l2addr_t *dst) {
     memcpy(prepdata, dst, IEEE802154_SHORT_ADDRESS_LEN);
     LOG_DEBUG("copy datalen\n");
     prepdata[IEEE802154_SHORT_ADDRESS_LEN]=(uint8_t)pkt->byte_len;
+    sprint_bytes_str(dummy, prepdata, IEEE802154_SHORT_ADDRESS_LEN+1, " ");
+    LOG_DEBUG("prepdata: %s\n", dummy),
     LOG_DEBUG("prepend data\n");
     packet_prepend_data(pkt, prepdata, IEEE802154_SHORT_ADDRESS_LEN+1);
-    LOG_DEBUG("send data\n");
+    sprint_bytes_str(dummy, pkt->data, pkt->byte_len, " ");
+    LOG_INFO("packet AFTER prepend: [%d] %s\n", pkt->byte_len, dummy);
+    LOG_DEBUG("sening data\n");
     if (serial_send(iotm3_hdl->sfd, iotm3_hdl->buf, MAX_SER_MSG_LEN, M3_SEND, pkt->data, pkt->byte_len)){
         LOG_ERROR("cannot send data");
         return -1;

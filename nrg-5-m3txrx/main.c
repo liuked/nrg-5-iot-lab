@@ -18,7 +18,6 @@ char start_seq[START_SEQ_LEN];
 char addrstr[IEEE802154_SHORT_ADDRESS_LEN+1];
 static uint8_t hw_addr[IEEE802154_SHORT_ADDRESS_LEN];
 
-
 uint8_t cmd;
 
 
@@ -42,6 +41,7 @@ int main(void)
     uint8_t i;
     uint8_t datalen;
     uint8_t data[MAX_DATA_LEN];
+    char dummy[MAX_LINE];
 
     DEBUG("I'm alive!");
     
@@ -84,7 +84,8 @@ int main(void)
                 } else {
                     sprintf(addrstr, "%02X:%02X", hw_addr[0], hw_addr[1]);
                 }
-                DEBUG("main: SENDING: "); print_bytes_str(data, datalen, " ");
+                sprint_bytes_str(dummy, data, datalen, " ");
+                DEBUG("main: SENDING: %s", dummy);
                 send_over_air(addrstr, data , datalen);
                 break;
             default:

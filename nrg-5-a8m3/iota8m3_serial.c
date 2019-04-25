@@ -60,23 +60,34 @@ serial_t serial_connect(void) {
         return -1;
     }
 
+    LOG_DEBUG("serial_connect: set speed %d...\n", BAUDRATE);
+    cfsetospeed (&newtio, BAUDRATE);
+    cfsetispeed (&newtio, BAUDRATE);
+
+    LOG_DEBUG("serial_connect: write parameters...\n");
     if (tcsetattr(serial, TCSANOW, &newtio) < 0) {   /* Set the parameters                */
         close(serial);
         return -1;
     }
 
 
-    if (ioctl(serial, TIOCGSERIAL, &ser_info) < 0) {
-        perror ("TIOCGSERIAL");
-        return -1;
-    }
-    ser_info.flags = ASYNC_SPD_CUST | ASYNC_LOW_LATENCY;
-    ser_info.custom_divisor = ser_info.baud_base / BAUDRATE;
-    if (ioctl(serial, TIOCSSERIAL, &ser_info) < 0) {
-        perror ("TIOCSSERIAL");
-        return -1;
-    }
-
+//    if (ioctl(serial, TIOCGSERIAL, &ser_info) < 0) {
+//        perror ("TIOCGSERIAL");
+//        return -1;
+//    }
+//    //ser_info.flags = ASYNC_SPD_CUST | ASYNC_LOW_LATENCY;
+//    //ser_info.custom_divisor = ser_info.baud_base / BAUDRATE;
+//    ser_info.flags = (ser_info.flags & ~ASYNC_SPD_MASK) | ASYNC_SPD_CUST;
+//    ser_info.custom_divisor = (ser_info.baud_base + (BAUDRATE / 2)) / BAUDRATE;
+//    float closestSpeed = ser_info.baud_base / ser_info.custom_divisor;
+//    if (closestSpeed < BAUDRATE * 98 / 100 || closestSpeed > BAUDRATE * 102 / 100) {
+//        LOG_INFO("Cannot set serial port speed to %d. Closest possible is %d\n", BAUDRATE, closestSpeed);
+//    }
+//
+//    if (ioctl(serial, TIOCSSERIAL, &ser_info) < 0) {
+//        perror ("TIOCSSERIAL");
+//        return -1;
+//    }
 
     return serial;
 
@@ -166,7 +177,7 @@ size_t serial_recv(serial_t sfd, serial_buf_t buf, size_t buflen, msg_type_t *rc
             LOG_INFO("---> [M3 RECV][%d]: %s\n", n, buf);
             break;
         default:
-        LOG_INFO("---> [M3 DEBUG][%d]: %s\n", n, buf);
+            LOG_INFO("---> [M3 DEBUG][%d]: %s\n", n, buf);
             break;
     }
 
@@ -214,6 +225,8 @@ int serial_send(serial_t sfd, serial_buf_t buf, size_t buflen, msg_type_t msg_ty
             }
         }
     }
+
+    LOG_DEBUG("finish sending, exiting due to msgtype: 0x%02X\n", rcv_msg_type);
 
     if (attempts>MAX_ATTEMPTS) {
         LOG_ERROR("cannot send (reached max attempts)\n");

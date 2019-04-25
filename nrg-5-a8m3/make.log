@@ -1,4 +1,0 @@
-rm -f ./*.o nrg-5-a8m3 
-gcc -c -o iota8m3_serial.o iota8m3_serial.c -I.
-gcc -c -o main.o main.c -I.
-gcc -o nrg-5-a8m3 iota8m3_serial.o main.o -I.

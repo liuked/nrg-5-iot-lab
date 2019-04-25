@@ -11,7 +11,7 @@
 #include <stddef.h>
 
 #define PORT "/dev/ttyA8_M3"
-#define BAUDRATE 500000
+#define BAUDRATE B500000
 #define MAX_ATTEMPTS 3
 #define MAX_LINE 100
 #define HOSTNAME_FILE "/etc/hostname"
